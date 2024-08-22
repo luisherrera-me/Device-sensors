@@ -6,7 +6,6 @@ import example.com.domain.repocitory.WidgetSensorDataSource
 import example.com.routes.postDataSensorRoute
 import example.com.services.JwtService
 import io.ktor.server.application.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.java.KoinJavaComponent
 

@@ -1,13 +1,6 @@
 package example.com.domain.model
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-
-@Serializable
-data class ApiResponse(
-    val user: User? = null,
-    val token: String? = null
-)
 
 @Serializable
 data class ApiResponseError(

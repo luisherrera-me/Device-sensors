@@ -5,12 +5,10 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import example.com.domain.model.User
 import example.com.domain.repocitory.UserDataSource
-import example.com.domain.repocitory.WidgetSensorDataSource
 import io.ktor.server.application.*
 import io.ktor.server.auth.jwt.*
 import kotlinx.coroutines.runBlocking
 import org.koin.java.KoinJavaComponent
-import java.util.*
 
 class JwtService (
     private val application: Application
