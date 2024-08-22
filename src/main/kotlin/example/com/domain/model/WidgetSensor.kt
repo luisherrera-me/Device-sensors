@@ -9,6 +9,7 @@ data class WidgetSensor (
     val id: String,
     val name: String,
     val fact: Float,
+    val location: Location,
     @Serializable(with = LocalDateTimeSerializer::class)
     val date: LocalDateTime ?= null,
     val idDevice: String
