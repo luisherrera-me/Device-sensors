@@ -1,6 +1,7 @@
 package example.com
 
 import example.com.plugins.*
+import example.com.services.JwtService
 import io.ktor.server.application.*
 
 fun main(args: Array<String>) {
@@ -8,5 +9,9 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    configureRouting()
+    val jwtService = JwtService(this)
+    configureKoin()
+    configureSerialization()
+    configureSecurity(jwtService)
+    configureRouting(jwtService)
 }
