@@ -14,7 +14,7 @@ class WidgetSensorDataSourceImpl(
     private val sensors = database.getCollection<WidgetSensor>()
 
     override suspend fun getWidgetSensorById(id: String): WidgetSensor? {
-        return sensors.findOneById(id = WidgetSensor::id eq id)
+        return sensors.findOneById(id = WidgetSensor::idDevice eq id)
     }
 
     override suspend fun saveWidgetSensor(widgetSensor: WidgetSensor): Boolean {
