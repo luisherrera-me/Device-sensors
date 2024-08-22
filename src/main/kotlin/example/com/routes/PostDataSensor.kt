@@ -65,7 +65,8 @@ private fun WidgetSensor.toModel(): WidgetSensor =
         name = this.name,
         fact = this.fact,
         date = LocalDateTime.now(),
-        idDevice = this.idDevice
+        idDevice = this.idDevice,
+        location = this.location
 
     )
 
