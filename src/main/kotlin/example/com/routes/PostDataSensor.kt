@@ -8,6 +8,7 @@ import example.com.services.JwtService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -26,16 +27,26 @@ fun Route.postDataSensorRoute(
         post (){
             val widgetSensor = call.receive<WidgetSensor>()
             val device = userDataSource.getUserInfoById(widgetSensor.idDevice)
+            val principalID = extractPrincipalUsername(call)
             if (device != null){
                 userDataSource.getUserInfoById(widgetSensor.idDevice)
 
                 try {
+                    if (principalID == device.id)
                     saveUserToDatabase(
                         widgetSensor,
                         jwtService,
                         userDataSource,
                         widgetSensorDataSource
-                    )
+                    )else{
+                        call.respond(
+                            status = HttpStatusCode.Forbidden,
+                            message = ApiResponseError(
+                                statusCode = 403,
+                                message = "No autorizado"
+                            )
+                        )
+                    }
                 } catch (e: Exception) {
                     call.respond(
                         status = HttpStatusCode.Forbidden,
@@ -65,8 +76,7 @@ private fun WidgetSensor.toModel(): WidgetSensor =
         name = this.name,
         fact = this.fact,
         date = LocalDateTime.now(),
-        idDevice = this.idDevice,
-        location = this.location
+        idDevice = this.idDevice
 
     )
 
@@ -78,7 +88,6 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.saveUserToDatabase(
 ) {
     val widgetSensor = widgetSensorRequest.toModel()
     val response = widgetSensorDataSource.saveWidgetSensor(widgetSensor)
-
     return if (response) {
         call.respond(
             status = HttpStatusCode.OK,
@@ -98,3 +107,9 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.saveUserToDatabase(
         )
     }
 }
+
+private fun extractPrincipalUsername(call: ApplicationCall): String? =
+    call.principal<JWTPrincipal>()
+        ?.payload
+        ?.getClaim("UserId")
+        ?.asString()
