@@ -41,6 +41,8 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 
+    implementation("io.ktor:ktor-server-websockets:$ktorVersion")
+
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
 
     // Additional dependencies

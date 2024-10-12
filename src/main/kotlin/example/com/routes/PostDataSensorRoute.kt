@@ -1,9 +1,8 @@
 package example.com.routes
 
-import example.com.domain.model.ApiResponseError
-import example.com.domain.model.WidgetSensor
+import example.com.domain.model.*
 import example.com.domain.repocitory.UserDataSource
-import example.com.domain.repocitory.WidgetSensorDataSource
+import example.com.domain.repocitory.SensorDataSource
 import example.com.services.JwtService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -19,17 +18,17 @@ import java.util.*
 
 
 fun Route.postDataSensorRoute(
-    widgetSensorDataSource: WidgetSensorDataSource,
+    widgetSensorDataSource: SensorDataSource,
     jwtService: JwtService,
     userDataSource: UserDataSource
 ){
     authenticate("another-auth"){
         post (){
-            val widgetSensor = call.receive<WidgetSensor>()
-            val device = userDataSource.getUserInfoById(widgetSensor.idDevice)
+            val widgetSensor = call.receive<SensorData>()
+            val device = userDataSource.getUserInfoById(widgetSensor.deviceId)
             val principalID = extractPrincipalUsername(call)
             if (device != null){
-                userDataSource.getUserInfoById(widgetSensor.idDevice)
+                userDataSource.getUserInfoById(widgetSensor.deviceId)
 
                 try {
                     if (principalID == device.id)
@@ -52,7 +51,7 @@ fun Route.postDataSensorRoute(
                         status = HttpStatusCode.Forbidden,
                         message = ApiResponseError(
                             statusCode = 403,
-                            message = "Error del servidor"
+                            message = "Error del servidor ${e.message}"
                         )
                     )
                 }
@@ -69,24 +68,25 @@ fun Route.postDataSensorRoute(
     }
 }
 
-private fun WidgetSensor.toModel(): WidgetSensor =
+private fun SensorData.toModel(): SensorData =
 
-    WidgetSensor(
+    SensorData(
         id = UUID.randomUUID().toString(),
         name = this.name,
         fact = this.fact,
         date = LocalDateTime.now(),
-        idDevice = this.idDevice
+        location = this.location,
+        deviceId = this.deviceId
 
     )
 
 private suspend fun PipelineContext<Unit, ApplicationCall>.saveUserToDatabase(
-    widgetSensorRequest: WidgetSensor,
+    sensorDataRequest: SensorData,
     jwtService: JwtService,
     userDataSource: UserDataSource,
-    widgetSensorDataSource: WidgetSensorDataSource
+    widgetSensorDataSource: SensorDataSource
 ) {
-    val widgetSensor = widgetSensorRequest.toModel()
+    val widgetSensor = sensorDataRequest.toModel()
     val response = widgetSensorDataSource.saveWidgetSensor(widgetSensor)
     return if (response) {
         call.respond(
